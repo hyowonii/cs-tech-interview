@@ -63,7 +63,7 @@
 
 # 프로세스 & 스레드
 
-프로세스 : 프로그램을 메모리 상에서 실행 중인 작업
+프로세스 : 메모리 상에서 실행 중인 프로그램
 
 스레드 : 프로세스 안에서 실행되는 여러 흐름 단위
 
@@ -74,7 +74,7 @@
 
 ### 개념
 - 메모리에 올라와 실행되고 있는 프로그램의 인스턴스(독립적인 개체)
-- 운영체제로부터 시스템 자원을 할당받는 작업의 단위
+- 운영체제로부터 시스템 자원(주소공간, 파일, 메모리 등)을 할당받는 작업의 단위
 - 동적인 개념으로는 실행된 프로그램을 의미
 
 ### 할당받는 시스템 자원의 예
@@ -167,64 +167,7 @@ _Context Switching?_
 - 프로세스 간 통신(IPC)보다 스레드 간의 통신의 비용이 적어 작업들 간의 통신 부담이 줄어듦
 - 프로세스 간의 전환 속도보다 스레드 간의 전환 속도가 더 빠름
 
-
-# CPU Scheduling
-: 실행 중인 프로세스 간의 전환을 의미. 이 전환을 통해 CPU 활용률을 극대화하고 컴퓨터 생산성을 향상시킴 (멀티 프로그램 시스템의 기초를 형성)
-
-## 선점 / 비선점 스케줄링
-- 선점(preemptive) : OS가 CPU의 사용권을 선점할 수 있는 경우, 강제 회수하는 경우 (처리시간 예측 어려움)
-- 비선점(nonpreemptive) : 프로세스 종료 or I/O 등의 이벤트가 있을 때까지 실행 보장 (처리시간 예측 용이)
-
-### 프로세스 상태
-![프로세스 상태](https://t1.daumcdn.net/cfile/tistory/99E85E3A5C460F1906)
-- 선점 스케줄링 : `Interrupt`, `I/O or Event Completion`, `I/O or Event Wait`, `Exit`
-- 비선점 스케줄링 : `I/O or Event Wait`, `Exit`
-
-프로세스의 상태 전이
-- Admiited(승인) : 프로세스 생성이 가능하여 승인됨
-- Scheduler Dispatch(스케줄러 디스패치) : 준비 상태에 있는 프로세스 중 하나를 선택하여 실행시킴
-- Interrupt(인터럽트) : 예외, 입출력, 이벤트 등이 발생하여 현재 실행 중인 프로세스를 준비 상태로 바꾸고 해당 작업을 먼저 처리하는 것
-- I/O or Event Wait(입출력 또는 이벤트 대기) : 실행 중인 프로세스가 입출력이나 이벤트를 처리해야 하는 경우, 입출력/이벤트가 모두 끝날 때까지 대기 상태로 만드는 것
-- I/O or Event Completion(입출력 또는 이벤트 완료) : 입출력/이벤트가 끝난 프로세스를 준비 상태로 전환하여 스케줄러에 의해 선택될 수 있도록 만드는 것
-
-## CPU 스케줄링의 종류
-- 비선점 스케줄링
-  1. FCFS(First Come First Served)
-      - 큐에 도착한 순서대로 CPU 할당
-      - 실행 시간이 짧은 게 뒤로 가면 평균 대기 시간이 길어짐
-  2. SJF(Shortest Job First)
-      - 수행시간이 가장 짧다고 판단되는 작업을 먼저 수행
-      - FCFS보다 평균 대기 시간 감소, 짧은 작업에 유리
-  3. HRN(Highest Response-ratio Next)
-      - 우선순위를 계산하여 점유 불평등을 보완한 방법(SJF의 단점 보완)
-      - 우선순위 = (대기시간 + 실행시간) / (실행시간)
-- 선점 스케줄링
-  1. Priority Scheduling
-      - 정적/동적으로 우선순위를 부여하여 우선순위가 높은 순서대로 처리
-      - 우선 순위가 낮은 프로세스가 무한정 기다리는 Starvation이 생길 수 있음
-      - Aging 방법으로 Starvation 문제 해결 가능 (*Aging: 시간이 갈수록 우선순위를 증가시킴)
-  2. Round Robin
-      - FCFS에 의해 프로세스들이 보내지면 각 프로세스는 동일한 시간의 Time Quantum만큼 CPU를 할당 받음 (*Time Qunatum or Time Slice: 실행의 최소 단위 시간)
-      - 할당 시간(Time Quantum)이 크면 FCFS와 같게 되고, 작으면 문맥 교환(Context Switching)이 잦아져 오버헤드 증가
-  3. Multilevel-Queue (다단계 큐)
-      - 작업들을 여러 종류의 그룹으로 나누어 여러 개의 큐를 이용하는 기법
-          ![Multilevel Queue](https://notesformsc.org/wp-content/uploads/2019/05/Multilevel-Queue.png)
-      - 우선순위가 낮은 큐들이 실행하지 못하는 것을 방지하고자 각 큐마다 다른 Time Quantum을 설정해주는 방식 사용
-      - 우선순위가 높은 큐는 작은 Time Quantum 할당, 우선순위가 낮은 큐는 큰 Time Quantum 할당
-  4. Multilevel-Feedback-Queue (다단계 피드백 큐)
-      ![Multilevel-Feedback-Queue](https://user-images.githubusercontent.com/13609011/91695489-2cb0b500-eba9-11ea-8578-6602fee742ed.png)
-      
-      - 다단계 큐에서 자신의 Time Quantum을 다 채운 프로세스는 밑으로 내려가고 그렇지 못한 프로세스는 원래 큐 그대로
-      - 짧은 작업에 유리, 입출력 위주(Interrupt가 잦은) 작업에 우선권을 줌
-      - 처리 시간이 짧은 프로세스를 먼저 처리하기 때문에 Turnaround 평균 시간을 줄여줌
-
-## CPU 스케줄링 성능 척도
-- CPU utilization : keep the CPU as busy as possible
-- Throughput : number of processes that complete their execution per time unit
-- Turnaround time(average) : amount of time to execute a particular process
-- Waiting time : amount of time a process has been waiting in the ready queue
-- Response time : amount of time it takes from when a request was submitted until the first response is produced, not ouput
-
+---
 
 # Interrupt(인터럽트)
 
@@ -271,92 +214,7 @@ process A 실행 중 디스크에서 어떤 데이터를 읽어오라는 명령�
   - 인터럽트 방식은 하드웨어 지원을 받아야 하는 제약이 있지만 폴링에 비해 신속하게 대응할 수 있음. 실시간 대응이 필요할 때는 필수적인 기능.
   - 즉, 인터럽트는 발생시기를 예측하기 힘든 경우에 컨트롤러가 가장 빠르게 대응할 수 있는 방법
 
-
-# IPC (Inter Process Communication)
-
-프로세스는 독립적으로 실행됨. 독립 되어있다는 것은, 다른 프로세스에게 영향을 받지 않는다는 것 (스레드는 프로세스 안에서 자원을 공유하므로 서로 영향)
-
-이런 독립적 구조를 가진 **프로세스 간의 통신**을 수행해야 하는 상황이 있을 수 있음 => **IPC 통신**
-
-프로세스 커널이 제공하는 IPC 설비를 이용해 프로세스간 통신을 할 수 있음
-
-_*[커널이란?](https://minkwon4.tistory.com/295)_
-운영체제 중 항상 메모리에 올라가 있는 운영체제의 핵심 부분으로써 하드웨어와 응용 프로그램 사이에서 인터페이스를 제공하는 역할을 하며 컴퓨터 자원들을 관리하는 역할을 한다. 즉, 커널은 인터페이스로써 응용 프로그램 수행에 필요한 여러가지 서비스를 제공하고 여러가지 하드웨어(CPU, 메모리) 등의 리소스를 관리하는 역할을 한다.
-
-## IPC 종류
-IPC 설비 종류도 여러가지가 있음. 필요에 따라 선택해서 사용
-
-1. 익명 PIPE
-- 파이프는 두 개의 프로세스를 연결. 하나의 프로세스는 데이터를 쓰기만 하고, 다른 하나는 데이터를 읽기만 함
-- **한쪽 방향으로만 통신이 가능한 반이중 통신** -> 양쪽으로 모두 송/수신을 원하면 2개의 파이프를 만듦
-- 장점 : 사용이 매우 간단. 단순한 데이터 흐름을 가질 땐 파이프를 사용하는 것이 효과적
-- 단점 : 전이중 통신을 위해 2개를 만들어야 할 때는 구현이 복잡
-
-2. Named PIPE (FIFO)
-- 익명 파이프는 통신할 프로세스를 명확히 알 수 있는 경우에 사용(부모-자식 프로세스 간 통신처럼)하는 반면, Named 파이프는 전혀 모르는 상태의 프로세스들 사이의 통신에 사용됨
-- 익명 파이프의 확장 상태. **부모 프로세스와 무관한 다른 프로세스도 통신이 가능**한 것 (통신을 위해 이름 있는 파일 사용)
-- 하지만 Named 파이프 역시 읽기/쓰기 동시에 불가능함. 따라서 전이중 통신을 위해서는 익명 파이프와 마찬가지로 2개를 만들어야 가능
-
-3. Message Queue
-- 입출력 방식은 Named 파이프와 동일
-- 데이터의 흐름(파이프)이 아닌 메모리 공간
-- 사용할 데이터에 번호를 붙여 여러 프로세스가 동시에 데이터를 쉽게 다룰 수 있음
-
-4. 공유 메모리
-- 파이프, 메시지 큐가 통신을 이용한 설비라면, 공유 메모리는 **데이터 자체를 공유하도록 지원하는 설비**
-- **프로세스간 메모리 영역을 공유해서 사용할 수 있도록** 허용해줌 (스레드처럼)
-- 프로세스가 공유 메모리 할당을 커널에 요청하면 커널은 해당 프로세스에 메모리 공간을 할당해주고, 이후 모든 프로세스는 해당 메모리 영역에 접근할 수 있게 됨
-  - **중계자 없이 곧바로 메모리에 접근할 수 있어 IPC 중 가장 빠르게 작동**
-
-5. 메모리 맵
-- 메모리 공유. **열린 파일을 메모리에 맵핑시켜서 공유**하는 방식 (즉, 공유 매개체가 파일+메모리)
-- 주로 파일로 대용량 데이터를 공유해야 할 때 사용
-
-6. 소켓
-- 네트워크 소켓 통신을 통해 데이터 공유
-- 클라이언트와 서버가 소켓을 통해 통신하는 구조, 원격에서 프로세스 간 데이터를 공유할 때 사용
-- 서버(bind, listen, accept), 클라이언트(connect)
-
-이러한 IPC 통신에서 프로세스 간 데이터를 동기화하고 보호하기 위해 [세마포어와 뮤텍스](https://heeonii.tistory.com/14)를 사용 (공유된 자원에 한번에 하나의 프로세스만 접근시킬 때)
-
-
-# PCB & Context Switching
-
-_프로세스가 여러 개일 때, CPU가 CPU 스케쥴링을 통해 관리하는 것을 Process Management라고 한다. 이 때, CPU는 각 프로세스들이 누군지 알아야 관리가 가능하다. 프로세스의 특징을 가지고 있는 것이 바로 Process Metadata(Process ID, Process State, Process Priority, CPU Registers, Owner, CPU Usage, Memory Usage)이고, 이 메타데이터는 프로세스가 생성되면 PCB(Process Control Block)에 저장된다._
-
-## PCB(Process Control Block)
-: 프로세스 메타데이터를 저장하는 곳, 한 PCB 안에는 한 프로세스의 정보가 담김
-
-<img width=300 src="https://t1.daumcdn.net/cfile/tistory/25673A5058F211C224">
-
-> `프로그램 실행 -> 프로세스 생성 -> 프로세스 주소 공간에 (코드, 데이터, 스택) 생성 -> 이 프로세스의 메타데이터들이 PCB에 저장됨`
-
-**PCB가 왜 필요한가?**
-
-CPU에서는 프로세스의 상태에 다라 교체작업이 이루어짐. 이 때, 앞으로 다시 수행할 대기 중인 프로세스에 관한 저장 값을 PCB에 저장해두는 것
-
-**PCB는 어떻게 관리되나?**
-
-LinkedList 방식으로 관리됨. PCB List Head에 PCB들이 생성될 때마다 붙게 됨. 주소값으로 연결이 이루어져 있는 연결리스트이기 때문에 삽입 및 삭제가 용이. 즉, 프로세스가 생성되면 해당 PCB가 생성되고 프로세스 완료시 제거됨
-
-이렇게 수행 중인 프로세스를 변경할 때, CPU의 레지스터 정보가 변경되는 것을 **Context Switching**이라고 함
-
-## Context Switching [참고](https://nesoy.github.io/articles/2018-11/Context-Switching)
-
-: 현재 진행하고 있는 Task(Process, Thread)의 상태를 저장하고 다음 진행할 Task의 상태 값을 읽어 적용하는 과정
-
-- 보통 인터럽트가 발생하거나, 실행 중인 CPU 사용 허가 시간을 모두 소모하거나, 입출력을 위해 대기해야 하는 경우 발생
-
-- 즉, 프로세스가 Read -> Running, Running -> Ready, Running -> Waiting 처럼 상태 변경 시 발생
-
-### **Context Switching Cost**
-Context Switching이 발생하게 되면 많은 Cost가 소요됨
-- Cache 초기화
-- Memory Mapping 초기화
-- Kernel은 항시 실행 (메모리 접근 위해)
-
-_Process Context Switching Cost > Thread Context Switching Cost_
-
+---
 
 # System Call
 
@@ -438,4 +296,152 @@ int main()
   - 키보드로 kill, break 등을 친 경우
   - 부모가 종료하는 경우
     - 부모 프로세스가 종료되기 전에 자식들이 먼저 종료됨
+
+---
+
+# PCB & Context Switching
+
+_프로세스가 여러 개일 때, CPU가 CPU 스케쥴링을 통해 관리하는 것을 Process Management라고 한다. 이 때, CPU는 각 프로세스들이 누군지 알아야 관리가 가능하다. 프로세스의 특징을 가지고 있는 것이 바로 Process Metadata(Process ID, Process State, Process Priority, CPU Registers, Owner, CPU Usage, Memory Usage)이고, 이 메타데이터는 프로세스가 생성되면 PCB(Process Control Block)에 저장된다._
+
+## PCB(Process Control Block)
+: 프로세스 메타데이터를 저장하는 곳, 한 PCB 안에는 한 프로세스의 정보가 담김
+
+<img width=300 src="https://t1.daumcdn.net/cfile/tistory/25673A5058F211C224">
+
+> `프로그램 실행 -> 프로세스 생성 -> 프로세스 주소 공간에 (코드, 데이터, 스택) 생성 -> 이 프로세스의 메타데이터들이 PCB에 저장됨`
+
+**PCB가 왜 필요한가?**
+
+CPU에서는 프로세스의 상태에 다라 교체작업이 이루어짐. 이 때, 앞으로 다시 수행할 대기 중인 프로세스에 관한 저장 값을 PCB에 저장해두는 것
+
+**PCB는 어떻게 관리되나?**
+
+LinkedList 방식으로 관리됨. PCB List Head에 PCB들이 생성될 때마다 붙게 됨. 주소값으로 연결이 이루어져 있는 연결리스트이기 때문에 삽입 및 삭제가 용이. 즉, 프로세스가 생성되면 해당 PCB가 생성되고 프로세스 완료시 제거됨
+
+이렇게 수행 중인 프로세스를 변경할 때, CPU의 레지스터 정보가 변경되는 것을 **Context Switching**이라고 함
+
+## Context Switching [참고](https://nesoy.github.io/articles/2018-11/Context-Switching)
+
+: 현재 진행하고 있는 Task(Process, Thread)의 상태를 저장하고 다음 진행할 Task의 상태 값을 읽어 적용하는 과정
+
+- 보통 인터럽트가 발생하거나, 실행 중인 CPU 사용 허가 시간을 모두 소모하거나, 입출력을 위해 대기해야 하는 경우 발생
+
+- 즉, 프로세스가 Read -> Running, Running -> Ready, Running -> Waiting 처럼 상태 변경 시 발생
+
+### **Context Switching Cost**
+Context Switching이 발생하게 되면 많은 Cost가 소요됨
+- Cache 초기화
+- Memory Mapping 초기화
+- Kernel은 항시 실행 (메모리 접근 위해)
+
+_Process Context Switching Cost > Thread Context Switching Cost_
+
+---
+
+# IPC (Inter Process Communication)
+
+프로세스는 독립적으로 실행됨. 독립 되어있다는 것은, 다른 프로세스에게 영향을 받지 않는다는 것 (스레드는 프로세스 안에서 자원을 공유하므로 서로 영향)
+
+이런 독립적 구조를 가진 **프로세스 간의 통신**을 수행해야 하는 상황이 있을 수 있음 => **IPC 통신**
+
+프로세스 커널이 제공하는 IPC 설비를 이용해 프로세스간 통신을 할 수 있음
+
+_*[커널이란?](https://minkwon4.tistory.com/295)_
+운영체제 중 항상 메모리에 올라가 있는 운영체제의 핵심 부분으로써 하드웨어와 응용 프로그램 사이에서 인터페이스를 제공하는 역할을 하며 컴퓨터 자원들을 관리하는 역할을 한다. 즉, 커널은 인터페이스로써 응용 프로그램 수행에 필요한 여러가지 서비스를 제공하고 여러가지 하드웨어(CPU, 메모리) 등의 리소스를 관리하는 역할을 한다.
+
+## IPC 종류
+IPC 설비 종류도 여러가지가 있음. 필요에 따라 선택해서 사용
+
+1. 익명 PIPE
+- 파이프는 두 개의 프로세스를 연결. 하나의 프로세스는 데이터를 쓰기만 하고, 다른 하나는 데이터를 읽기만 함
+- **한쪽 방향으로만 통신이 가능한 반이중 통신** -> 양쪽으로 모두 송/수신을 원하면 2개의 파이프를 만듦
+- 장점 : 사용이 매우 간단. 단순한 데이터 흐름을 가질 땐 파이프를 사용하는 것이 효과적
+- 단점 : 전이중 통신을 위해 2개를 만들어야 할 때는 구현이 복잡
+
+2. Named PIPE (FIFO)
+- 익명 파이프는 통신할 프로세스를 명확히 알 수 있는 경우에 사용(부모-자식 프로세스 간 통신처럼)하는 반면, Named 파이프는 전혀 모르는 상태의 프로세스들 사이의 통신에 사용됨
+- 익명 파이프의 확장 상태. **부모 프로세스와 무관한 다른 프로세스도 통신이 가능**한 것 (통신을 위해 이름 있는 파일 사용)
+- 하지만 Named 파이프 역시 읽기/쓰기 동시에 불가능함. 따라서 전이중 통신을 위해서는 익명 파이프와 마찬가지로 2개를 만들어야 가능
+
+3. Message Queue
+- 입출력 방식은 Named 파이프와 동일
+- 데이터의 흐름(파이프)이 아닌 메모리 공간
+- 사용할 데이터에 번호를 붙여 여러 프로세스가 동시에 데이터를 쉽게 다룰 수 있음
+
+4. 공유 메모리
+- 파이프, 메시지 큐가 통신을 이용한 설비라면, 공유 메모리는 **데이터 자체를 공유하도록 지원하는 설비**
+- **프로세스간 메모리 영역을 공유해서 사용할 수 있도록** 허용해줌 (스레드처럼)
+- 프로세스가 공유 메모리 할당을 커널에 요청하면 커널은 해당 프로세스에 메모리 공간을 할당해주고, 이후 모든 프로세스는 해당 메모리 영역에 접근할 수 있게 됨
+  - **중계자 없이 곧바로 메모리에 접근할 수 있어 IPC 중 가장 빠르게 작동**
+
+5. 메모리 맵
+- 메모리 공유. **열린 파일을 메모리에 맵핑시켜서 공유**하는 방식 (즉, 공유 매개체가 파일+메모리)
+- 주로 파일로 대용량 데이터를 공유해야 할 때 사용
+
+6. 소켓
+- 네트워크 소켓 통신을 통해 데이터 공유
+- 클라이언트와 서버가 소켓을 통해 통신하는 구조, 원격에서 프로세스 간 데이터를 공유할 때 사용
+- 서버(bind, listen, accept), 클라이언트(connect)
+
+이러한 IPC 통신에서 프로세스 간 데이터를 동기화하고 보호하기 위해 [세마포어와 뮤텍스](https://heeonii.tistory.com/14)를 사용 (공유된 자원에 한번에 하나의 프로세스만 접근시킬 때)
+
+---
+
+# CPU Scheduling
+: 실행 중인 프로세스 간의 전환을 의미. 이 전환을 통해 CPU 활용률을 극대화하고 컴퓨터 생산성을 향상시킴 (멀티 프로그램 시스템의 기초를 형성)
+
+## 선점 / 비선점 스케줄링
+- 선점(preemptive) : OS가 CPU의 사용권을 선점할 수 있는 경우, 강제 회수하는 경우 (처리시간 예측 어려움)
+- 비선점(nonpreemptive) : 프로세스 종료 or I/O 등의 이벤트가 있을 때까지 실행 보장 (처리시간 예측 용이)
+
+### 프로세스 상태
+![프로세스 상태](https://t1.daumcdn.net/cfile/tistory/99E85E3A5C460F1906)
+- 선점 스케줄링 : `Interrupt`, `I/O or Event Completion`, `I/O or Event Wait`, `Exit`
+- 비선점 스케줄링 : `I/O or Event Wait`, `Exit`
+
+프로세스의 상태 전이
+- Admiited(승인) : 프로세스 생성이 가능하여 승인됨
+- Scheduler Dispatch(스케줄러 디스패치) : 준비 상태에 있는 프로세스 중 하나를 선택하여 실행시킴
+- Interrupt(인터럽트) : 예외, 입출력, 이벤트 등이 발생하여 현재 실행 중인 프로세스를 준비 상태로 바꾸고 해당 작업을 먼저 처리하는 것
+- I/O or Event Wait(입출력 또는 이벤트 대기) : 실행 중인 프로세스가 입출력이나 이벤트를 처리해야 하는 경우, 입출력/이벤트가 모두 끝날 때까지 대기 상태로 만드는 것
+- I/O or Event Completion(입출력 또는 이벤트 완료) : 입출력/이벤트가 끝난 프로세스를 준비 상태로 전환하여 스케줄러에 의해 선택될 수 있도록 만드는 것
+
+## CPU 스케줄링의 종류
+- 비선점 스케줄링
+  1. FCFS(First Come First Served)
+      - 큐에 도착한 순서대로 CPU 할당
+      - 실행 시간이 짧은 게 뒤로 가면 평균 대기 시간이 길어짐
+  2. SJF(Shortest Job First)
+      - 수행시간이 가장 짧다고 판단되는 작업을 먼저 수행
+      - FCFS보다 평균 대기 시간 감소, 짧은 작업에 유리
+  3. HRN(Highest Response-ratio Next)
+      - 우선순위를 계산하여 점유 불평등을 보완한 방법(SJF의 단점 보완)
+      - 우선순위 = (대기시간 + 실행시간) / (실행시간)
+- 선점 스케줄링
+  1. Priority Scheduling
+      - 정적/동적으로 우선순위를 부여하여 우선순위가 높은 순서대로 처리
+      - 우선 순위가 낮은 프로세스가 무한정 기다리는 Starvation이 생길 수 있음
+      - Aging 방법으로 Starvation 문제 해결 가능 (*Aging: 시간이 갈수록 우선순위를 증가시킴)
+  2. Round Robin
+      - FCFS에 의해 프로세스들이 보내지면 각 프로세스는 동일한 시간의 Time Quantum만큼 CPU를 할당 받음 (*Time Qunatum or Time Slice: 실행의 최소 단위 시간)
+      - 할당 시간(Time Quantum)이 크면 FCFS와 같게 되고, 작으면 문맥 교환(Context Switching)이 잦아져 오버헤드 증가
+  3. Multilevel-Queue (다단계 큐)
+      - 작업들을 여러 종류의 그룹으로 나누어 여러 개의 큐를 이용하는 기법
+          ![Multilevel Queue](https://notesformsc.org/wp-content/uploads/2019/05/Multilevel-Queue.png)
+      - 우선순위가 낮은 큐들이 실행하지 못하는 것을 방지하고자 각 큐마다 다른 Time Quantum을 설정해주는 방식 사용
+      - 우선순위가 높은 큐는 작은 Time Quantum 할당, 우선순위가 낮은 큐는 큰 Time Quantum 할당
+  4. Multilevel-Feedback-Queue (다단계 피드백 큐)
+      ![Multilevel-Feedback-Queue](https://user-images.githubusercontent.com/13609011/91695489-2cb0b500-eba9-11ea-8578-6602fee742ed.png)
+      
+      - 다단계 큐에서 자신의 Time Quantum을 다 채운 프로세스는 밑으로 내려가고 그렇지 못한 프로세스는 원래 큐 그대로
+      - 짧은 작업에 유리, 입출력 위주(Interrupt가 잦은) 작업에 우선권을 줌
+      - 처리 시간이 짧은 프로세스를 먼저 처리하기 때문에 Turnaround 평균 시간을 줄여줌
+
+## CPU 스케줄링 성능 척도
+- CPU utilization : keep the CPU as busy as possible
+- Throughput : number of processes that complete their execution per time unit
+- Turnaround time(average) : amount of time to execute a particular process
+- Waiting time : amount of time a process has been waiting in the ready queue
+- Response time : amount of time it takes from when a request was submitted until the first response is produced, not ouput
+
 
