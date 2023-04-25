@@ -12,6 +12,16 @@ https://garden1500.tistory.com/11
 
 2. 웹브라우저에 google.com 치면 일어나는 과정
 
+> _우리가 Chrome을 실행시켜 주소창에 특정 url을 입력하면 어떤 일이 일어나는가?_
+>
+> <img src="https://media.vlpt.us/images/woo0_hooo/post/e119383c-61cc-46d5-a85d-b27b65ddee1e/Untitled.png" alt="웹 통신 흐름">
+>
+> 1. 사용자가 웹 브라우저를 통해 url 입력
+> 2. 입려된 url 중 도메인 네임을 DNS 서버에서 검색
+>3. [DNS 서버](#dns-서버)에서 해당 도메인 네임에 해당하는 IP 주소를 찾아 사용자가 입력한 url 정보와 함께 전달
+> 4. 웹페이지 url 정보와 전달받은 IP 주소를 이용해 HTTP 요청 메세지를 생성
+> 5. 요청은 TCP를 통해 서버로 전송됨
+> 6. 서버는 클라이언트의 요청을 받고 그에 대한 응답을 전송
 
 
 3. OS 스레드 , 프로세스 차이(멀티스레드와 멀티프로세스차이, PCB)
