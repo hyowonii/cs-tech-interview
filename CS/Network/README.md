@@ -80,7 +80,7 @@
 
 # TCP/IP
 
-## TCP(Transmission Control Protocol)
+# TCP(Transmission Control Protocol)
 - Transport layer(전송 계층)에서 사용하는 프로토콜
 - IP와 함께 사용. IP가 데이터의 배달을 처리한다면 TCP는 패킷을 추적 및 관리
 - Reliable network 보장
